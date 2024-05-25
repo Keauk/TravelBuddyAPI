@@ -1,10 +1,6 @@
-﻿// Controllers/UsersController.cs
-using Microsoft.AspNetCore.Mvc;
-using TravelBuddyAPI.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using TravelBuddyAPI.Models;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+using TravelBuddyAPI.Services.Interfaces;
 
 namespace TravelBuddyAPI.Controllers
 {
@@ -12,42 +8,42 @@ namespace TravelBuddyAPI.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly TravelBuddyContext _context;
+        private readonly IUserService _userService;
 
-        public UsersController(TravelBuddyContext context)
+        public UsersController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userService.GetUserByIdAsync(id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return Ok(user);
         }
 
         // POST: api/Users
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            var createdUser = await _userService.CreateUserAsync(user);
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
+            return CreatedAtAction(nameof(GetUser), new { id = createdUser.UserId }, createdUser);
         }
 
         // PUT: api/Users/5
@@ -59,46 +55,22 @@ namespace TravelBuddyAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            await _userService.UpdateUserAsync(user);
+          
+            return Ok(user);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            bool result = await _userService.DeleteUserAsync(id); 
+            if (!result)
             {
-                return NotFound();
+                return UnprocessableEntity();
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.UserId == id);
+            return Ok();
         }
     }
 }
