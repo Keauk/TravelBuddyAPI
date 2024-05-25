@@ -10,10 +10,12 @@ namespace TravelBuddyAPI.Services.Implementations
     public class UserService : IUserService
     {
         private readonly TravelBuddyContext _context;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UserService(TravelBuddyContext context)
+        public UserService(TravelBuddyContext context, IPasswordHasher passwordHasher)
         {
             _context = context;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
@@ -28,6 +30,7 @@ namespace TravelBuddyAPI.Services.Implementations
                 })
                 .ToListAsync();
         }
+
         public async Task<UserResponseDto?> GetUserByIdAsync(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -60,10 +63,10 @@ namespace TravelBuddyAPI.Services.Implementations
 
         public async Task<UserResponseDto> CreateUserAsync(UserInputDto userDto)
         {
-            var user = new User
+            User user = new()
             {
                 Username = userDto.Username,
-                PasswordHash = userDto.Password,
+                PasswordHash = _passwordHasher.HashPassword(userDto.Password),
                 Email = userDto.Email,
                 CreatedDate = DateTime.UtcNow
             };
@@ -91,7 +94,7 @@ namespace TravelBuddyAPI.Services.Implementations
 
             user.Username = userDto.Username;
             user.Email = userDto.Email;
-            user.PasswordHash = userDto.Password;
+            user.PasswordHash = _passwordHasher.HashPassword(userDto.Password);
 
             _context.Entry(user).State = EntityState.Modified;
 
@@ -113,8 +116,10 @@ namespace TravelBuddyAPI.Services.Implementations
             {
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
+
                 return true;
             }
+
             return false;
         }
     }
