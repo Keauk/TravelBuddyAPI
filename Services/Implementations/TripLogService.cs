@@ -3,7 +3,7 @@ using TravelBuddyAPI.Data;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
 
-namespace TravelBuddyAPI.Services
+namespace TravelBuddyAPI.Services.Implementations
 {
     public class TripLogService : ITripLogService
     {

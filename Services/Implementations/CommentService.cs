@@ -3,7 +3,7 @@ using TravelBuddyAPI.Data;
 using TravelBuddyAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace TravelBuddyAPI.Services
+namespace TravelBuddyAPI.Services.Implementations
 {
     public class CommentService : ICommentService
     {

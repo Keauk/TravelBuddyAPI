@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using TravelBuddyAPI.Data;
-using TravelBuddyAPI.Services;
+using TravelBuddyAPI.Services.Implementations;
 using TravelBuddyAPI.Services.Interfaces;
 
 namespace TravelBuddyAPI
@@ -27,6 +27,7 @@ namespace TravelBuddyAPI
             builder.Services.AddScoped<ITripLogService, TripLogService>();
             builder.Services.AddScoped<ICommentService, CommentService>();
             builder.Services.AddScoped<ITripLogService, TripLogService>();
+            builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
             var app = builder.Build();
 

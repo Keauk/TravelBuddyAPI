@@ -5,7 +5,7 @@ using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
 
-namespace TravelBuddyAPI.Services
+namespace TravelBuddyAPI.Services.Implementations
 {
     public class UserService : IUserService
     {
@@ -84,7 +84,7 @@ namespace TravelBuddyAPI.Services
         {
             var user = await _context.Users.FindAsync(id);
 
-            if(user == null)
+            if (user == null)
             {
                 return null;
             }
@@ -96,7 +96,7 @@ namespace TravelBuddyAPI.Services
             _context.Entry(user).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
-            
+
             return new UserResponseDto
             {
                 UserId = user.UserId,
