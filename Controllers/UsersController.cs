@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TravelBuddyAPI.DTOs;
-using TravelBuddyAPI.Models;
-using TravelBuddyAPI.Services;
 using TravelBuddyAPI.Services.Interfaces;
 
 namespace TravelBuddyAPI.Controllers
@@ -52,21 +49,16 @@ namespace TravelBuddyAPI.Controllers
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, UserInputDto userDto)
+        public async Task<ActionResult<UserResponseDto>> PutUser(int id, UserInputDto userDto)
         {
-            var user = await _userService.GetRawUserByIdAsync(id);
-            if (user == null)
+            var updatedUser = await _userService.UpdateUserAsync(id, userDto);
+
+            if (updatedUser == null)
             {
                 return NotFound();
             }
-
-            user.Username = userDto.Username;
-            user.Email = userDto.Email;
-            user.PasswordHash = userDto.Password;
-
-            await _userService.UpdateUserAsync(user);
-
-            return Ok();
+            
+            return Ok(updatedUser);
         }
 
         // DELETE: api/Users/5

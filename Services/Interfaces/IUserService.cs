@@ -9,7 +9,7 @@ namespace TravelBuddyAPI.Services.Interfaces
         Task<UserResponseDto?> GetUserByIdAsync(int id);
         Task<User?> GetRawUserByIdAsync(int id);
         Task<IEnumerable<UserResponseDto>> GetAllUsersAsync();
-        Task UpdateUserAsync(User user);
+        Task<UserResponseDto?> UpdateUserAsync(int id, UserInputDto userDto);
         Task<bool> DeleteUserAsync(int id);
     }
 }

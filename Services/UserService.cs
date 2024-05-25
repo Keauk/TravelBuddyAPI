@@ -80,11 +80,30 @@ namespace TravelBuddyAPI.Services
             };
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task<UserResponseDto?> UpdateUserAsync(int id, UserInputDto userDto)
         {
+            var user = await _context.Users.FindAsync(id);
+
+            if(user == null)
+            {
+                return null;
+            }
+
+            user.Username = userDto.Username;
+            user.Email = userDto.Email;
+            user.PasswordHash = userDto.Password;
+
             _context.Entry(user).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
+            
+            return new UserResponseDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Email = user.Email,
+                CreatedDate = user.CreatedDate
+            };
         }
 
         public async Task<bool> DeleteUserAsync(int id)
