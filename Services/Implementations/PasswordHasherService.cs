@@ -3,7 +3,7 @@ using TravelBuddyAPI.Services.Interfaces;
 
 namespace TravelBuddyAPI.Services.Implementations
 {
-    public class PasswordHasherService : IPasswordHasher
+    public class PasswordHasherService : IPasswordHasherService
     {
         private readonly PasswordHasher<object> _passwordHasher;
 

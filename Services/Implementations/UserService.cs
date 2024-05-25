@@ -10,9 +10,9 @@ namespace TravelBuddyAPI.Services.Implementations
     public class UserService : IUserService
     {
         private readonly TravelBuddyContext _context;
-        private readonly IPasswordHasher _passwordHasher;
+        private readonly IPasswordHasherService _passwordHasher;
 
-        public UserService(TravelBuddyContext context, IPasswordHasher passwordHasher)
+        public UserService(TravelBuddyContext context, IPasswordHasherService passwordHasher)
         {
             _context = context;
             _passwordHasher = passwordHasher;
