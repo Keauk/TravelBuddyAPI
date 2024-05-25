@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Models;
+using TravelBuddyAPI.Services;
 using TravelBuddyAPI.Services.Interfaces;
 
 namespace TravelBuddyAPI.Controllers
@@ -17,15 +20,16 @@ namespace TravelBuddyAPI.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetUsers()
         {
             var users = await _userService.GetAllUsersAsync();
+        
             return Ok(users);
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserResponseDto>> GetUser(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
 
@@ -39,29 +43,34 @@ namespace TravelBuddyAPI.Controllers
 
         // POST: api/Users
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<UserResponseDto>> PostUser(UserDto userDto)
         {
-            var createdUser = await _userService.CreateUserAsync(user);
+            var createdUser = await _userService.CreateUserAsync(userDto);
 
             return CreatedAtAction(nameof(GetUser), new { id = createdUser.UserId }, createdUser);
         }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, UserDto userDto)
         {
-            if (id != user.UserId)
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
+            user.Username = userDto.Username;
+            user.Email = userDto.Email;
+            user.PasswordHash = userDto.Password;
+
             await _userService.UpdateUserAsync(user);
-          
-            return Ok(user);
+
+            return NoContent();
         }
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
+    // DELETE: api/Users/5
+    [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             bool result = await _userService.DeleteUserAsync(id); 

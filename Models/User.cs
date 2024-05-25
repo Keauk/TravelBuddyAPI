@@ -20,10 +20,5 @@ namespace TravelBuddyAPI.Models
 
         [Required]
         public DateTime CreatedDate { get; set; }
-
-        public User()
-        {
-            CreatedDate = DateTime.UtcNow;
-        }
     }
 }

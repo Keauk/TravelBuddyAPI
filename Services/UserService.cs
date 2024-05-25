@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Data;
+using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
 
@@ -15,9 +16,17 @@ namespace TravelBuddyAPI.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Select(user => new UserResponseDto
+                {
+                    UserId = user.UserId,
+                    Username = user.Username,
+                    Email = user.Email,
+                    CreatedDate = user.CreatedDate
+                })
+                .ToListAsync();
         }
 
         public async Task<User?> GetUserByIdAsync(int id)
@@ -25,16 +34,32 @@ namespace TravelBuddyAPI.Services
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<User> CreateUserAsync(User user)
+        public async Task<UserResponseDto> CreateUserAsync(UserDto userDto)
         {
+            var user = new User
+            {
+                Username = userDto.Username,
+                PasswordHash = userDto.Password,
+                Email = userDto.Email,
+                CreatedDate = DateTime.UtcNow
+            };
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return user;
+
+            return new UserResponseDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Email = user.Email,
+                CreatedDate = user.CreatedDate
+            };
         }
 
         public async Task UpdateUserAsync(User user)
         {
             _context.Entry(user).State = EntityState.Modified;
+         
             await _context.SaveChangesAsync();
         }
 
