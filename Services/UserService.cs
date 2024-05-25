@@ -28,13 +28,37 @@ namespace TravelBuddyAPI.Services
                 })
                 .ToListAsync();
         }
-
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<UserResponseDto?> GetUserByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return new UserResponseDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Email = user.Email,
+                CreatedDate = user.CreatedDate
+            };
         }
 
-        public async Task<UserResponseDto> CreateUserAsync(UserDto userDto)
+        public async Task<User?> GetRawUserByIdAsync(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user;
+        }
+
+        public async Task<UserResponseDto> CreateUserAsync(UserInputDto userDto)
         {
             var user = new User
             {
@@ -59,7 +83,7 @@ namespace TravelBuddyAPI.Services
         public async Task UpdateUserAsync(User user)
         {
             _context.Entry(user).State = EntityState.Modified;
-         
+
             await _context.SaveChangesAsync();
         }
 

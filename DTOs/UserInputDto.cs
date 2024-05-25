@@ -1,6 +1,6 @@
 ﻿namespace TravelBuddyAPI.DTOs
 {
-    public class UserDto
+    public class UserInputDto
     {
         public string Username { get; set; }
         public string Email { get; set; }

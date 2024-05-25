@@ -23,7 +23,7 @@ namespace TravelBuddyAPI.Controllers
         public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetUsers()
         {
             var users = await _userService.GetAllUsersAsync();
-        
+
             return Ok(users);
         }
 
@@ -43,18 +43,18 @@ namespace TravelBuddyAPI.Controllers
 
         // POST: api/Users
         [HttpPost]
-        public async Task<ActionResult<UserResponseDto>> PostUser(UserDto userDto)
+        public async Task<ActionResult<UserResponseDto>> PostUser(UserInputDto userDto)
         {
             var createdUser = await _userService.CreateUserAsync(userDto);
 
-            return CreatedAtAction(nameof(GetUser), new { id = createdUser.UserId }, createdUser);
+            return Ok(createdUser);
         }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, UserDto userDto)
+        public async Task<IActionResult> PutUser(int id, UserInputDto userDto)
         {
-            var user = await _userService.GetUserByIdAsync(id);
+            var user = await _userService.GetRawUserByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
@@ -66,14 +66,14 @@ namespace TravelBuddyAPI.Controllers
 
             await _userService.UpdateUserAsync(user);
 
-            return NoContent();
+            return Ok();
         }
 
-    // DELETE: api/Users/5
-    [HttpDelete("{id}")]
+        // DELETE: api/Users/5
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            bool result = await _userService.DeleteUserAsync(id); 
+            bool result = await _userService.DeleteUserAsync(id);
             if (!result)
             {
                 return UnprocessableEntity();
