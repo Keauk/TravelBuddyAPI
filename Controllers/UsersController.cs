@@ -70,7 +70,7 @@ namespace TravelBuddyAPI.Controllers
 
             if (updatedUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("User not found"); 
             }
             
             return Ok(updatedUser);
