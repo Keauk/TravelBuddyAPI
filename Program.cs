@@ -59,6 +59,7 @@ namespace TravelBuddyAPI
 
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserContextService, UserContextService>();
+            builder.Services.AddScoped<ITripService, TripService>();
             builder.Services.AddScoped<ITripLogService, TripLogService>();
             builder.Services.AddScoped<ICommentService, CommentService>();
             builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();

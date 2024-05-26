@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
