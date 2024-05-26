@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TravelBuddyAPI.DTOs;
+using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
 
 namespace TravelBuddyAPI.Controllers
@@ -94,20 +95,9 @@ namespace TravelBuddyAPI.Controllers
         // GET: api/users/me
         [HttpGet("me")]
         [Authorize(Policy = "ValidUserPolicy")]
-        public async Task<IActionResult> GetCurrentUser()
+        public IActionResult GetCurrentUser()
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-            {
-                return Unauthorized("User ID claim not found");
-            }
-            if (!int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return Unauthorized("User ID claim is not a valid integer");
-            }
-
-            var user = await _userService.GetUserByIdAsync(userId);
-            if (user == null)
+            if (HttpContext.Items["User"] is not User user)
             {
                 return NotFound("User not found");
             }
