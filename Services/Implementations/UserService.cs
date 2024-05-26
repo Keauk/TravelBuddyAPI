@@ -14,12 +14,14 @@ namespace TravelBuddyAPI.Services.Implementations
         private readonly TravelBuddyContext _context;
         private readonly IPasswordHasherService _passwordHasher;
         private readonly SymmetricSecurityKey _key;
+        private readonly IUserContextService _userContext;
 
-        public UserService(TravelBuddyContext context, IPasswordHasherService passwordHasher, SymmetricSecurityKey key)
+        public UserService(TravelBuddyContext context, IPasswordHasherService passwordHasher, SymmetricSecurityKey key, IUserContextService userContext)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _key = key;
+            _userContext = userContext;
         }
 
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
@@ -51,6 +53,12 @@ namespace TravelBuddyAPI.Services.Implementations
                 Email = user.Email,
                 CreatedDate = user.CreatedDate
             };
+        }
+
+        public Task<User?> GetCurrentUser()
+        {
+            User? user = _userContext.GetCurrentuser();
+            return Task.FromResult(user);
         }
 
         public async Task<User?> GetRawUserByIdAsync(int id)

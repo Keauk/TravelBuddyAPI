@@ -55,7 +55,10 @@ namespace TravelBuddyAPI
                 options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserContextService, UserContextService>();
             builder.Services.AddScoped<ITripLogService, TripLogService>();
             builder.Services.AddScoped<ICommentService, CommentService>();
             builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();

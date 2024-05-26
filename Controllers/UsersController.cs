@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
@@ -12,12 +11,10 @@ namespace TravelBuddyAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IUserService userService, ILogger<UsersController> logger)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
-            _logger = logger;
         }
 
         // GET: api/users
