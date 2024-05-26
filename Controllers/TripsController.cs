@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
@@ -21,7 +22,7 @@ namespace TravelBuddyAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Trip>>> GetTripsForUser(int userId)
         {
-            var trips = await _tripService.GetTripsForUserAsync(userId);
+            IEnumerable<Trip>? trips = await _tripService.GetTripsForUserAsync(userId);
 
             return Ok(trips);
         }
@@ -30,7 +31,7 @@ namespace TravelBuddyAPI.Controllers
         [HttpGet("{tripId}")]
         public async Task<ActionResult<Trip>> GetTrip(int tripId)
         {
-            var trip = await _tripService.GetTripByIdAsync(tripId);
+            Trip? trip = await _tripService.GetTripByIdAsync(tripId);
 
             if (trip == null)
             {
@@ -60,45 +61,33 @@ namespace TravelBuddyAPI.Controllers
 
         // POST: api/trips
         [HttpPost]
-        public async Task<ActionResult<UserResponseDto>> PostUser(TripInputDto tripInputDto)
+        public async Task<ActionResult<Trip>> PostTrip(TripInputDto tripInputDto)
         {
-            var createdUser = await _tripService.CreateTripAsync(tripInputDto);
+            Trip createdTrip = await _tripService.CreateTripAsync(tripInputDto);
 
-            return Ok(createdUser);
+            return Ok(createdTrip);
         }
 
-        // POST: api/users/login
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
+        // PUT: api/trips/5
+        [HttpPut("{tripId}")]
+        public async Task<ActionResult<Trip>> PutTrip(int tripId, TripInputDto tripInputDto)
         {
-            var token = await _userService.LoginAsync(userLoginDto.Username, userLoginDto.Password);
-            if (token == null)
+            Trip? updatedTrip = await _tripService.UpdateTripAsync(tripId, tripInputDto);
+
+            if (updatedTrip == null)
             {
-                return Unauthorized();
+                return NotFound("Trip not found");
             }
 
-            return Ok(new { Token = token });
+            return Ok(updatedTrip);
         }
 
-        // PUT: api/users/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult<UserResponseDto>> PutUser(int id, UserInputDto userDto)
+        // DELETE: api/trips/5
+        [HttpDelete("{tripId}")]
+        public async Task<IActionResult> DeleteUser(int tripId)
         {
-            var updatedUser = await _userService.UpdateUserAsync(id, userDto);
+            bool result = await _tripService.DeleteTripAsync(tripId);
 
-            if (updatedUser == null)
-            {
-                return NotFound("User not found");
-            }
-
-            return Ok(updatedUser);
-        }
-
-        // DELETE: api/users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            bool result = await _userService.DeleteUserAsync(id);
             if (!result)
             {
                 return UnprocessableEntity();
@@ -107,17 +96,19 @@ namespace TravelBuddyAPI.Controllers
             return Ok();
         }
 
-        // GET: api/users/me
+        // GET: api/trips/me
         [HttpGet("me")]
         [Authorize(Policy = "ValidUserPolicy")]
-        public IActionResult GetCurrentUser()
+        public async Task<ActionResult<IEnumerable<Trip>>> GetTripsForCurrentUser()
         {
             if (HttpContext.Items["User"] is not User user)
             {
                 return NotFound("User not found");
             }
 
-            return Ok(user);
+            IEnumerable<Trip>? trips = await _tripService.GetTripsForUserAsync(user.UserId);
+
+            return Ok(trips);
         }
     }
 }
