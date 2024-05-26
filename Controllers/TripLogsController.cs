@@ -30,9 +30,9 @@ namespace TravelBuddyAPI.Controllers
         // PUT: api/trips/{tripId}/triplogs/{tripLogId}
         [HttpPut("{tripLogId}")]
         [Authorize(Policy = "ValidUserPolicy")]
-        public async Task<ActionResult<TripLog>> UpdateTripLog(int tripId, TripLogInputDto tripLogDto)
+        public async Task<ActionResult<TripLog>> UpdateTripLog(int tripLogId, TripLogInputDto tripLogDto)
         {
-            TripLog? tripLog = await _tripLogService.UpdateTripLogAsync(tripId, tripLogDto);
+            TripLog? tripLog = await _tripLogService.UpdateTripLogAsync(tripLogId, tripLogDto);
             if (tripLog == null)
             {
                 return NotFound("Trip log not found");
