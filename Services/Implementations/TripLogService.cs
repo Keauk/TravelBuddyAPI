@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Data;
+using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
 
@@ -14,16 +15,27 @@ namespace TravelBuddyAPI.Services.Implementations
             _context = context;
         }
 
-        public async Task<TripLog> CreateTripLogAsync(TripLog tripLog)
+        public async Task<TripLog> CreateTripLogAsync(int tripId, TripLogInputDto tripLogInputDto)
         {
+            TripLog tripLog = new()
+            {
+                TripId  = tripId,
+                Location = tripLogInputDto.Location,
+                Notes = tripLogInputDto.Notes,
+                PhotoPath = tripLogInputDto.PhotoPath,
+                Date = tripLogInputDto.Date
+            };
+
+
             await _context.TripLogs.AddAsync(tripLog);
             await _context.SaveChangesAsync();
+
             return tripLog;
         }
 
-        public async Task<TripLog?> UpdateTripLogAsync(TripLog tripLog)
+        public async Task<TripLog?> UpdateTripLogAsync(int tripLogId, TripLogInputDto tripLog)
         {
-            var existingTripLog = await _context.TripLogs.FindAsync(tripLog.TripLogId);
+            TripLog? existingTripLog = await _context.TripLogs.FindAsync(tripLogId);
             if (existingTripLog == null)
             {
                 return null;
@@ -39,6 +51,19 @@ namespace TravelBuddyAPI.Services.Implementations
             return existingTripLog;
         }
 
+        public async Task<TripLog?> GetTripLogByIdAsync(int tripId, int tripLogId)
+        {
+            TripLog? existingTripLog = await _context.TripLogs
+                .FirstOrDefaultAsync(tl => tl.TripId == tripId && tl.TripLogId == tripLogId);
+
+            if (existingTripLog == null)
+            {
+                return null;
+            }
+
+            return existingTripLog;
+        }
+
         public async Task<bool> DeleteTripLogAsync(int tripLogId)
         {
             var existingTripLog = await _context.TripLogs.FindAsync(tripLogId);
@@ -49,6 +74,7 @@ namespace TravelBuddyAPI.Services.Implementations
 
             _context.TripLogs.Remove(existingTripLog);
             await _context.SaveChangesAsync();
+
             return true;
         }
 

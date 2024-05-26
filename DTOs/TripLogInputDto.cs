@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TravelBuddyAPI.DTOs
 {
-    public class TripLogInput
+    public class TripLogInputDto
     {
         [Required(ErrorMessage = "Location is required")]
         public string Location { get; set; }
@@ -13,5 +12,8 @@ namespace TravelBuddyAPI.DTOs
 
         [Required(ErrorMessage = "PhotoPath is required")]
         public string PhotoPath { get; set; }
+
+        [Required(ErrorMessage = "Date is required")]
+        public DateTime Date {  get; set; }
     }
 }
