@@ -33,7 +33,7 @@ namespace TravelBuddyAPI.Controllers
 
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found");
             }
 
             return Ok(user);
@@ -55,7 +55,7 @@ namespace TravelBuddyAPI.Controllers
             var token = await _userService.LoginAsync(userLoginDto.Username, userLoginDto.Password);
             if (token == null)
             {
-                return Unauthorized();
+                return Unauthorized("Invalid credentials");
             }
 
             return Ok(new { Token = token });

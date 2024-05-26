@@ -16,21 +16,40 @@ namespace TravelBuddyAPI.Services.Implementations
 
         public async Task<TripLog> CreateTripLogAsync(TripLog tripLog)
         {
-            _context.TripLogs.Add(tripLog);
+            await _context.TripLogs.AddAsync(tripLog);
             await _context.SaveChangesAsync();
             return tripLog;
         }
 
-        public async Task UpdateTripLogAsync(TripLog tripLog)
+        public async Task<TripLog?> UpdateTripLogAsync(TripLog tripLog)
         {
-            _context.Entry(tripLog).State = EntityState.Modified;
+            var existingTripLog = await _context.TripLogs.FindAsync(tripLog.TripLogId);
+            if (existingTripLog == null)
+            {
+                return null;
+            }
+
+            existingTripLog.Location = tripLog.Location;
+            existingTripLog.Notes = tripLog.Notes;
+            existingTripLog.Date = tripLog.Date;
+            existingTripLog.PhotoPath = tripLog.PhotoPath;
+
+            _context.Entry(existingTripLog).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+            return existingTripLog;
         }
 
-        public async Task DeleteTripLogAsync(TripLog tripLog)
+        public async Task<bool> DeleteTripLogAsync(int tripLogId)
         {
-            _context.TripLogs.Remove(tripLog);
+            var existingTripLog = await _context.TripLogs.FindAsync(tripLogId);
+            if (existingTripLog == null)
+            {
+                return false;
+            }
+
+            _context.TripLogs.Remove(existingTripLog);
             await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<IEnumerable<TripLog>> GetTripLogsForTripAsync(int tripId)
