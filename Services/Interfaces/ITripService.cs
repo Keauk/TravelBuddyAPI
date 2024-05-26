@@ -6,7 +6,7 @@ namespace TravelBuddyAPI.Services.Interfaces
     {
         Task<Trip> CreateTripAsync(Trip trip);
         Task<IEnumerable<Trip>?> GetTripsForUserAsync(int userId);
-        Task UpdateTripAsync(Trip trip);
-        Task DeleteTripAsync(Trip trip);
+        Task<Trip?> UpdateTripAsync(Trip trip);
+        Task<bool> DeleteTripAsync(Trip trip);
     }
 }

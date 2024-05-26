@@ -18,6 +18,7 @@ public class TripService : ITripService
     {
         await _context.Trips.AddAsync(trip);
         await _context.SaveChangesAsync();
+
         return trip;
     }
 
@@ -52,13 +53,36 @@ public class TripService : ITripService
         return await _context.Trips.Where(t => t.UserId == userId).ToListAsync();
     }
 
-    public Task UpdateTripAsync(Trip trip)
+    public async Task<Trip?> UpdateTripAsync(Trip trip)
     {
-        throw new NotImplementedException();
+        var existingTrip = await _context.Trips.FindAsync(trip.TripId);
+        if (existingTrip == null)
+        {
+            return null;
+        }
+
+        existingTrip.Title = trip.Title;
+        existingTrip.Description = trip.Description;
+        existingTrip.StartDate = trip.StartDate;
+        existingTrip.EndDate = trip.EndDate;
+
+        await _context.SaveChangesAsync();
+
+        return existingTrip;
     }
 
-    public Task DeleteTripAsync(Trip trip)
+
+    public async Task<bool> DeleteTripAsync(Trip trip)
     {
-        throw new NotImplementedException();
+        var existingTrip = await _context.Trips.FindAsync(trip.TripId);
+        if (existingTrip == null)
+        {
+            return false;
+        }
+
+        _context.Trips.Remove(existingTrip);
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 }
