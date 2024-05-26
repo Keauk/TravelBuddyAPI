@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TravelBuddyAPI.Data;
+using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
 
@@ -14,15 +15,24 @@ public class TripService : ITripService
         _userService = userContextService;
     }
 
-    public async Task<Trip> CreateTripAsync(Trip trip)
+    public async Task<Trip> CreateTripAsync(TripInputDto tripInputDto)
     {
+
+        Trip trip = new()
+        {
+            Title = tripInputDto.Title,
+            Description = tripInputDto.Description,
+            StartDate = tripInputDto.StartDate,
+            EndDate = tripInputDto.EndDate
+        };
+
         await _context.Trips.AddAsync(trip);
         await _context.SaveChangesAsync();
 
         return trip;
     }
 
-    public async Task<Trip?> CreateTripForUserAsync(Trip trip, int userId)
+    public async Task<Trip?> CreateTripForUserAsync(TripInputDto tripInputDto, int userId)
     {
         var user = await _context.Users.FindAsync(userId);
         if (user == null)
@@ -30,12 +40,22 @@ public class TripService : ITripService
             return null;
         }
 
-        trip.UserId = userId;
+        Trip trip = new()
+        {
+            Title = tripInputDto.Title,
+            Description = tripInputDto.Description,
+            StartDate = tripInputDto.StartDate,
+            EndDate = tripInputDto.EndDate,
+            UserId = userId
+        };
 
-        return await CreateTripAsync(trip);
+        await _context.Trips.AddAsync(trip);
+        await _context.SaveChangesAsync();
+
+        return trip;
     }
 
-    public async Task<Trip?> CreateTripForCurrentUserAsync(Trip trip)
+    public async Task<Trip?> CreateTripForCurrentUserAsync(TripInputDto tripInputDto)
     {
         User? user = await _userService.GetCurrentUser();
         if (user == null)
@@ -43,9 +63,7 @@ public class TripService : ITripService
             return null;
         }
 
-        int currentUserId = user.UserId;
-
-        return await CreateTripForUserAsync(trip, currentUserId);
+        return await CreateTripForUserAsync(tripInputDto, user.UserId);
     }
 
     public async Task<IEnumerable<Trip>?> GetTripsForUserAsync(int userId)
@@ -53,18 +71,34 @@ public class TripService : ITripService
         return await _context.Trips.Where(t => t.UserId == userId).ToListAsync();
     }
 
-    public async Task<Trip?> UpdateTripAsync(Trip trip)
+    public async Task<Trip?> GetTripByIdAsync(int tripId)
     {
-        var existingTrip = await _context.Trips.FindAsync(trip.TripId);
+        return await _context.Trips
+            .Where(t => t.TripId == tripId)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<IEnumerable<Trip>> SearchTripsByTitleAsync(string title)
+    {
+        return await _context.Trips
+            .Where(t => t.Title.Contains(title))
+            .ToListAsync();
+    }
+
+    public async Task<Trip?> UpdateTripAsync(int tripId, TripInputDto tripInputDto)
+    {
+        var existingTrip = await _context.Trips.FindAsync(tripId);
         if (existingTrip == null)
         {
             return null;
         }
 
-        existingTrip.Title = trip.Title;
-        existingTrip.Description = trip.Description;
-        existingTrip.StartDate = trip.StartDate;
-        existingTrip.EndDate = trip.EndDate;
+        existingTrip.Title = tripInputDto.Title;
+        existingTrip.Description = tripInputDto.Description;
+        existingTrip.StartDate = tripInputDto.StartDate;
+        existingTrip.EndDate = tripInputDto.EndDate;
+
+        _context.Entry(existingTrip).State = EntityState.Modified;
 
         await _context.SaveChangesAsync();
 
@@ -72,17 +106,19 @@ public class TripService : ITripService
     }
 
 
-    public async Task<bool> DeleteTripAsync(Trip trip)
+    public async Task<bool> DeleteTripAsync(int tripId)
     {
-        var existingTrip = await _context.Trips.FindAsync(trip.TripId);
+        Trip? existingTrip = await _context.Trips.FindAsync(tripId);
         if (existingTrip == null)
         {
             return false;
         }
 
         _context.Trips.Remove(existingTrip);
+
         await _context.SaveChangesAsync();
 
         return true;
     }
+
 }
