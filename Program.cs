@@ -1,6 +1,7 @@
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.Services.Implementations;
 using TravelBuddyAPI.Services.Interfaces;
@@ -22,12 +23,36 @@ namespace TravelBuddyAPI
                 options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
-            // Register services
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ITripLogService, TripLogService>();
             builder.Services.AddScoped<ICommentService, CommentService>();
-            builder.Services.AddScoped<ITripLogService, TripLogService>();
             builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+
+            // Retrieve and validate JWT key from configuration
+            var jwtKey= builder.Configuration["Jwt:Key"];
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new InvalidOperationException("JWT Key is not configured.");
+            }
+            var key = Encoding.ASCII.GetBytes(jwtKey);
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
             var app = builder.Build();
 
@@ -40,8 +65,9 @@ namespace TravelBuddyAPI
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 
