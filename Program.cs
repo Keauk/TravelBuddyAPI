@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using TravelBuddyAPI.Data;
+using TravelBuddyAPI.Security;
 using TravelBuddyAPI.Services.Implementations;
 using TravelBuddyAPI.Services.Interfaces;
 
@@ -17,7 +20,36 @@ namespace TravelBuddyAPI
             // Add services to the container.
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TravelBuddy API", Version = "v1" });
+
+                // Add security definitions for Bearer token
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Enter JWT token for authorization.",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                        },
+                        new List<string>()
+                    }
+                });
+            });
+
 
             builder.Services.AddDbContext<TravelBuddyContext>(
                 options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -28,11 +60,18 @@ namespace TravelBuddyAPI
             builder.Services.AddScoped<ICommentService, CommentService>();
             builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
+            // Authorization configuration
+            builder.Services.AddAuthorizationBuilder()
+                .AddPolicy("ValidUserPolicy", policy =>
+                    policy.RequireAuthenticatedUser()
+                           .AddRequirements(new ValidUserRequirement()));
+            builder.Services.AddScoped<IAuthorizationHandler, ValidUserHandler>();
+
             // Retrieve and validate the JWT key from configuration
             var jwtKey = builder.Configuration["Jwt:Key"];
-            if (string.IsNullOrEmpty(jwtKey))
+            if (string.IsNullOrEmpty(jwtKey) || jwtKey.Length < 32)
             {
-                throw new InvalidOperationException("JWT Key is not configured.");
+                throw new InvalidOperationException("JWT Key is not configured or is too short. It must be at least 32 characters long.");
             }
             var key = Encoding.ASCII.GetBytes(jwtKey);
 
