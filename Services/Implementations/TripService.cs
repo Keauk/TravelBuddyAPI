@@ -7,12 +7,12 @@ using TravelBuddyAPI.Services.Interfaces;
 public class TripService : ITripService
 {
     private readonly TravelBuddyContext _context;
-    private readonly IUserService _userService;
+    private readonly IUserContextService _userContext;
 
-    public TripService(TravelBuddyContext context, IUserService userContextService)
+    public TripService(TravelBuddyContext context, IUserContextService userContext)
     {
         _context = context;
-        _userService = userContextService;
+        _userContext = userContext;
     }
 
     public async Task<Trip> CreateTripAsync(TripInputDto tripInputDto)
@@ -57,7 +57,7 @@ public class TripService : ITripService
 
     public async Task<Trip?> CreateTripForCurrentUserAsync(TripInputDto tripInputDto)
     {
-        User? user = await _userService.GetCurrentUser();
+        UserResponseDto? user = _userContext.GetCurrentuser();
         if (user == null)
         {
             return null;
@@ -85,7 +85,7 @@ public class TripService : ITripService
             .ToListAsync();
     }
 
-    public async Task<Trip?> UpdateTripAsync(int tripId, TripInputDto tripInputDto)
+    public async Task<Trip?> UpdateTripAsync(int tripId, TripUpdateDto tripUpdateDto)
     {
         var existingTrip = await _context.Trips.FindAsync(tripId);
         if (existingTrip == null)
@@ -93,10 +93,10 @@ public class TripService : ITripService
             return null;
         }
 
-        existingTrip.Title = tripInputDto.Title;
-        existingTrip.Description = tripInputDto.Description;
-        existingTrip.StartDate = tripInputDto.StartDate;
-        existingTrip.EndDate = tripInputDto.EndDate;
+        existingTrip.Title = tripUpdateDto.Title;
+        existingTrip.Description = tripUpdateDto.Description;
+        existingTrip.StartDate = tripUpdateDto.StartDate;
+        existingTrip.EndDate = tripUpdateDto.EndDate;
 
         _context.Entry(existingTrip).State = EntityState.Modified;
 

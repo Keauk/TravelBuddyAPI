@@ -63,13 +63,13 @@ namespace TravelBuddyAPI
             builder.Services.AddScoped<ITripLogService, TripLogService>();
             builder.Services.AddScoped<ICommentService, CommentService>();
             builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+            builder.Services.AddScoped<IAuthorizationHandler, ValidUserHandler>();
 
             // Authorization configuration
             builder.Services.AddAuthorizationBuilder()
-                .AddPolicy("ValidUserPolicy", policy =>
+                .AddPolicy("ValidUserPolicy", policy => 
                     policy.RequireAuthenticatedUser()
                            .AddRequirements(new ValidUserRequirement()));
-            builder.Services.AddScoped<IAuthorizationHandler, ValidUserHandler>();
 
             // Retrieve and validate the JWT key from configuration
             var jwtKey = builder.Configuration["Jwt:Key"];

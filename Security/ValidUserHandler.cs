@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Services.Interfaces;
 
 namespace TravelBuddyAPI.Security
@@ -25,7 +26,7 @@ namespace TravelBuddyAPI.Security
             var userIdClaim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
             {
-                var user = await _userService.GetUserByIdAsync(userId);
+                UserResponseDto? user = await _userService.GetUserByIdAsync(userId);
                 if (user != null)
                 {
                     context.Succeed(requirement);

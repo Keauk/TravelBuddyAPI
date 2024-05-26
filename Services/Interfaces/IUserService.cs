@@ -8,7 +8,7 @@ namespace TravelBuddyAPI.Services.Interfaces
         Task<UserResponseDto> CreateUserAsync(UserInputDto userDto);
         Task<UserResponseDto?> GetUserByIdAsync(int id);
         Task<User?> GetRawUserByIdAsync(int id);
-        Task<User?> GetCurrentUser();
+        Task<UserResponseDto?> GetCurrentUser();
         Task<IEnumerable<UserResponseDto>> GetAllUsersAsync();
         Task<UserResponseDto?> UpdateUserAsync(int id, UserInputDto userDto);
         Task<bool> DeleteUserAsync(int id);

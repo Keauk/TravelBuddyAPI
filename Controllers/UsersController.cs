@@ -94,7 +94,7 @@ namespace TravelBuddyAPI.Controllers
         [Authorize(Policy = "ValidUserPolicy")]
         public IActionResult GetCurrentUser()
         {
-            if (HttpContext.Items["User"] is not User user)
+            if (HttpContext.Items["User"] is not UserResponseDto user)
             {
                 return NotFound("User not found");
             }

@@ -19,7 +19,5 @@ namespace TravelBuddyAPI.DTOs
         [Required(ErrorMessage = "End date is required")]
         [DataType(DataType.DateTime)]
         public DateTime EndDate { get; set; }
-
-        public int UserId { get; set; }
     }
 }

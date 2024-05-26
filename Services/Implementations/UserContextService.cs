@@ -1,8 +1,8 @@
-﻿using TravelBuddyAPI.Models;
+﻿using TravelBuddyAPI.DTOs;
 
 public interface IUserContextService
 {
-    User? GetCurrentuser();
+    UserResponseDto? GetCurrentuser();
 }
 
 public class UserContextService : IUserContextService
@@ -14,9 +14,9 @@ public class UserContextService : IUserContextService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public User? GetCurrentuser()
+    public UserResponseDto? GetCurrentuser()
     {
-        return _httpContextAccessor.HttpContext?.Items["User"] as User;
+        return _httpContextAccessor.HttpContext?.Items["User"] as UserResponseDto;
     }
 }
 

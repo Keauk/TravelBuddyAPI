@@ -60,18 +60,24 @@ namespace TravelBuddyAPI.Controllers
 
         // POST: api/trips
         [HttpPost]
-        public async Task<ActionResult<Trip>> PostTrip(TripInputDto tripInputDto)
+        [Authorize(Policy = "ValidUserPolicy")]
+        public async Task<ActionResult<Trip?>> PostTrip(TripInputDto tripInputDto)
         {
-            Trip createdTrip = await _tripService.CreateTripAsync(tripInputDto);
+            Trip? createdTrip = await _tripService.CreateTripForCurrentUserAsync(tripInputDto);
+            if(createdTrip == null)
+            {
+                return BadRequest("Could not create the trip.");
+            }
+
 
             return Ok(createdTrip);
         }
 
         // PUT: api/trips/5
         [HttpPut("{tripId}")]
-        public async Task<ActionResult<Trip>> PutTrip(int tripId, TripInputDto tripInputDto)
+        public async Task<ActionResult<Trip>> PutTrip(int tripId, TripUpdateDto tripUpdateDto)
         {
-            Trip? updatedTrip = await _tripService.UpdateTripAsync(tripId, tripInputDto);
+            Trip? updatedTrip = await _tripService.UpdateTripAsync(tripId, tripUpdateDto);
 
             if (updatedTrip == null)
             {
@@ -100,7 +106,7 @@ namespace TravelBuddyAPI.Controllers
         [Authorize(Policy = "ValidUserPolicy")]
         public async Task<ActionResult<IEnumerable<Trip>>> GetTripsForCurrentUser()
         {
-            if (HttpContext.Items["User"] is not User user)
+            if (HttpContext.Items["User"] is not UserResponseDto user)
             {
                 return NotFound("User not found");
             }

@@ -55,9 +55,9 @@ namespace TravelBuddyAPI.Services.Implementations
             };
         }
 
-        public Task<User?> GetCurrentUser()
+        public Task<UserResponseDto?> GetCurrentUser()
         {
-            User? user = _userContext.GetCurrentuser();
+            UserResponseDto? user = _userContext.GetCurrentuser();
             return Task.FromResult(user);
         }
 
