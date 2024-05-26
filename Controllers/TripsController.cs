@@ -19,6 +19,7 @@ namespace TravelBuddyAPI.Controllers
 
         // GET: api/trips
         [HttpGet]
+        [Authorize(Policy = "ValidUserPolicy")]
         public async Task<ActionResult<IEnumerable<Trip>>> GetTripsForUser(int userId)
         {
             IEnumerable<Trip>? trips = await _tripService.GetTripsForUserAsync(userId);
@@ -28,6 +29,7 @@ namespace TravelBuddyAPI.Controllers
 
         // GET: api/trips/5
         [HttpGet("{tripId}")]
+        [Authorize(Policy = "ValidUserPolicy")]
         public async Task<ActionResult<Trip>> GetTrip(int tripId)
         {
             Trip? trip = await _tripService.GetTripByIdAsync(tripId);
@@ -42,6 +44,7 @@ namespace TravelBuddyAPI.Controllers
 
         // GET: api/trips/search?title=someTitle
         [HttpGet("search")]
+        [Authorize(Policy = "ValidUserPolicy")]
         public async Task<IActionResult> GetTripsByTitle([FromQuery] TripSearchDto searchDto)
         {
             if (!ModelState.IsValid)
@@ -75,6 +78,7 @@ namespace TravelBuddyAPI.Controllers
 
         // PUT: api/trips/5
         [HttpPut("{tripId}")]
+        [Authorize(Policy = "ValidUserPolicy")]
         public async Task<ActionResult<Trip>> PutTrip(int tripId, TripUpdateDto tripUpdateDto)
         {
             Trip? updatedTrip = await _tripService.UpdateTripAsync(tripId, tripUpdateDto);
@@ -89,6 +93,7 @@ namespace TravelBuddyAPI.Controllers
 
         // DELETE: api/trips/5
         [HttpDelete("{tripId}")]
+        [Authorize(Policy = "ValidUserPolicy")]
         public async Task<IActionResult> DeleteUser(int tripId)
         {
             bool result = await _tripService.DeleteTripAsync(tripId);

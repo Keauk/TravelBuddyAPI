@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TravelBuddyAPI.DTOs;
-using TravelBuddyAPI.Models;
 using TravelBuddyAPI.Services.Interfaces;
 
 namespace TravelBuddyAPI.Controllers
@@ -64,6 +63,7 @@ namespace TravelBuddyAPI.Controllers
 
         // PUT: api/users/5
         [HttpPut("{id}")]
+        [Authorize(Policy = "ValidUserPolicy")]
         public async Task<ActionResult<UserResponseDto>> PutUser(int id, UserInputDto userDto)
         {
             var updatedUser = await _userService.UpdateUserAsync(id, userDto);
@@ -78,6 +78,7 @@ namespace TravelBuddyAPI.Controllers
 
         // DELETE: api/users/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "ValidUserPolicy")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             bool result = await _userService.DeleteUserAsync(id);
