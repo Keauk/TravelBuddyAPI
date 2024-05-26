@@ -22,21 +22,31 @@ namespace TravelBuddyAPI.Controllers
         [Authorize(Policy = "ValidUserPolicy")]
         public async Task<ActionResult<TripLog>> CreateTripLog(int tripId, TripLogInputDto tripLogDto)
         {
-            var tripLog = await _tripLogService.CreateTripLogAsync(tripId, tripLogDto);
+            TripLog tripLog = await _tripLogService.CreateTripLogAsync(tripId, tripLogDto);
+
+            return CreatedAtAction(nameof(GetTripLog), new { tripId = tripLog.TripId, tripLogId = tripLog.TripLogId }, tripLog);
+        }
+
+        // PUT: api/trips/{tripId}/triplogs/{tripLogId}
+        [HttpPut("{tripLogId}")]
+        [Authorize(Policy = "ValidUserPolicy")]
+        public async Task<ActionResult<TripLog>> UpdateTripLog(int tripId, TripLogInputDto tripLogDto)
+        {
+            TripLog? tripLog = await _tripLogService.UpdateTripLogAsync(tripId, tripLogDto);
             if (tripLog == null)
             {
-                return BadRequest("Trip log creation failed");
+                return NotFound("Trip log not found");
             }
 
-            return CreatedAtAction(nameof(GetTripLog), new { tripId = tripLog.TripId, id = tripLog.TripLogId }, tripLog);
+            return Ok(tripLog);
         }
 
         // GET: api/trips/{tripId}/triplogs
         [HttpGet]
         [Authorize(Policy = "ValidUserPolicy")]
-        public async Task<ActionResult<IEnumerable<TripLog>>> GetTripLogsForTrip(int tripId)
+        public async Task<ActionResult<IEnumerable<TripLog?>>> GetTripLogsForTrip(int tripId)
         {
-            var tripLogs = await _tripLogService.GetTripLogsForTripAsync(tripId);
+            IEnumerable<TripLog?> tripLogs = await _tripLogService.GetTripLogsForTripAsync(tripId);
             if (tripLogs == null || !tripLogs.Any())
             {
                 return NotFound("No trip logs found for this trip");
@@ -48,7 +58,7 @@ namespace TravelBuddyAPI.Controllers
         // GET: api/trips/{tripId}/triplogs/{tripLogId}
         [HttpGet("{tripLogId}")]
         [Authorize(Policy = "ValidUserPolicy")]
-        public async Task<ActionResult<TripLog>> GetTripLog(int tripId, int tripLogId)
+        public async Task<ActionResult<TripLog?>> GetTripLog(int tripId, int tripLogId)
         {
             var tripLog = await _tripLogService.GetTripLogByIdAsync(tripId, tripLogId);
             if (tripLog == null)
