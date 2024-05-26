@@ -15,7 +15,7 @@ namespace TravelBuddyAPI.Controllers
             _userService = userService;
         }
 
-        // GET: api/Users
+        // GET: api/users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetUsers()
         {
@@ -24,7 +24,7 @@ namespace TravelBuddyAPI.Controllers
             return Ok(users);
         }
 
-        // GET: api/Users/5
+        // GET: api/users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserResponseDto>> GetUser(int id)
         {
@@ -38,7 +38,7 @@ namespace TravelBuddyAPI.Controllers
             return Ok(user);
         }
 
-        // POST: api/Users
+        // POST: api/users
         [HttpPost]
         public async Task<ActionResult<UserResponseDto>> PostUser(UserInputDto userDto)
         {
@@ -47,7 +47,7 @@ namespace TravelBuddyAPI.Controllers
             return Ok(createdUser);
         }
 
-        // POST: api/Users/login
+        // POST: api/users/login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
         {
@@ -60,7 +60,7 @@ namespace TravelBuddyAPI.Controllers
             return Ok(new { Token = token });
         }
 
-        // PUT: api/Users/5
+        // PUT: api/users/5
         [HttpPut("{id}")]
         public async Task<ActionResult<UserResponseDto>> PutUser(int id, UserInputDto userDto)
         {
@@ -74,7 +74,7 @@ namespace TravelBuddyAPI.Controllers
             return Ok(updatedUser);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
