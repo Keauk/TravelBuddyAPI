@@ -1,5 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using TravelBuddyAPI.Data;
 using TravelBuddyAPI.DTOs;
 using TravelBuddyAPI.Models;
@@ -11,11 +16,13 @@ namespace TravelBuddyAPI.Services.Implementations
     {
         private readonly TravelBuddyContext _context;
         private readonly IPasswordHasherService _passwordHasher;
+        private readonly SymmetricSecurityKey _key;
 
-        public UserService(TravelBuddyContext context, IPasswordHasherService passwordHasher)
+        public UserService(TravelBuddyContext context, IPasswordHasherService passwordHasher, SymmetricSecurityKey key)
         {
             _context = context;
             _passwordHasher = passwordHasher;
+            _key = key;
         }
 
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
@@ -121,6 +128,29 @@ namespace TravelBuddyAPI.Services.Implementations
             }
 
             return false;
+        }
+
+        public async Task<string?> LoginAsync(string username, string password)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
+            if (user == null || !_passwordHasher.VerifyPassword(password, user.PasswordHash))
+            {
+                return null;
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username)
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

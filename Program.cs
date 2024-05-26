@@ -28,14 +28,18 @@ namespace TravelBuddyAPI
             builder.Services.AddScoped<ICommentService, CommentService>();
             builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
-            // Retrieve and validate JWT key from configuration
-            var jwtKey= builder.Configuration["Jwt:Key"];
+            // Retrieve and validate the JWT key from configuration
+            var jwtKey = builder.Configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(jwtKey))
             {
                 throw new InvalidOperationException("JWT Key is not configured.");
             }
             var key = Encoding.ASCII.GetBytes(jwtKey);
 
+            // Register the JWT key for dependency injection
+            builder.Services.AddSingleton(new SymmetricSecurityKey(key));
+
+            // Configure JWT authentication
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

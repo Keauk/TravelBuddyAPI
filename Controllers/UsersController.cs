@@ -5,7 +5,7 @@ using TravelBuddyAPI.Services.Interfaces;
 namespace TravelBuddyAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/users")]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -45,6 +45,19 @@ namespace TravelBuddyAPI.Controllers
             var createdUser = await _userService.CreateUserAsync(userDto);
 
             return Ok(createdUser);
+        }
+
+        // POST: api/Users/login
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
+        {
+            var token = await _userService.LoginAsync(userLoginDto.Username, userLoginDto.Password);
+            if (token == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(new { Token = token });
         }
 
         // PUT: api/Users/5
