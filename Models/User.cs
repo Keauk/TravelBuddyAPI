@@ -21,6 +21,8 @@ namespace TravelBuddyAPI.Models
         [Required]
         public string Email { get; set; }
 
+        public string? ProfilePicturePath { get; set; }
+
         [Required]
         public DateTime CreatedDate { get; set; }
     }
