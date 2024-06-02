@@ -17,7 +17,6 @@ public class TripService : ITripService
 
     public async Task<Trip> CreateTripAsync(TripInputDto tripInputDto)
     {
-
         Trip trip = new()
         {
             Title = tripInputDto.Title,
@@ -42,11 +41,11 @@ public class TripService : ITripService
 
         Trip trip = new()
         {
+            UserId = userId,
             Title = tripInputDto.Title,
             Description = tripInputDto.Description,
             StartDate = tripInputDto.StartDate,
-            EndDate = tripInputDto.EndDate,
-            UserId = userId
+            EndDate = tripInputDto.EndDate
         };
 
         await _context.Trips.AddAsync(trip);
@@ -104,7 +103,6 @@ public class TripService : ITripService
 
         return existingTrip;
     }
-
 
     public async Task<bool> DeleteTripAsync(int tripId)
     {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelBuddyAPI.Data;
 
@@ -11,9 +12,11 @@ using TravelBuddyAPI.Data;
 namespace TravelBuddyAPI.Migrations
 {
     [DbContext(typeof(TravelBuddyContext))]
-    partial class TravelBuddyContextModelSnapshot : ModelSnapshot
+    [Migration("20240602075634_MakeTripStartDateAndEndDateNullable")]
+    partial class MakeTripStartDateAndEndDateNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
