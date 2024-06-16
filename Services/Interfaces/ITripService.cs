@@ -8,6 +8,7 @@ namespace TravelBuddyAPI.Services.Interfaces
         Task<Trip> CreateTripAsync(TripInputDto trip);
         Task<Trip?> CreateTripForCurrentUserAsync(TripInputDto tripInputDto);
         Task<IEnumerable<Trip>?> GetTripsForUserAsync(int userId);
+        Task<IEnumerable<Trip>?> GetAllTrips();
         Task<Trip?> GetTripByIdAsync(int tripId);
         Task<IEnumerable<Trip>>SearchTripsByTitleAsync(string title);
         Task<Trip?> UpdateTripAsync(int tripId, TripUpdateDto tripUpdateDto);

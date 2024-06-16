@@ -20,9 +20,9 @@ namespace TravelBuddyAPI.Controllers
         // GET: api/trips
         [HttpGet]
         [Authorize(Policy = "ValidUserPolicy")]
-        public async Task<ActionResult<IEnumerable<Trip>>> GetTripsForUser(int userId)
+        public async Task<ActionResult<IEnumerable<Trip>>> GetAllTrips()
         {
-            IEnumerable<Trip>? trips = await _tripService.GetTripsForUserAsync(userId);
+            IEnumerable<Trip>? trips = await _tripService.GetAllTrips();
 
             return Ok(trips);
         }

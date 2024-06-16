@@ -70,6 +70,11 @@ public class TripService : ITripService
         return await _context.Trips.Where(t => t.UserId == userId).ToListAsync();
     }
 
+    public async Task<IEnumerable<Trip>> GetAllTrips()
+    {
+        return await _context.Trips.ToListAsync();
+    }
+
     public async Task<Trip?> GetTripByIdAsync(int tripId)
     {
         return await _context.Trips
