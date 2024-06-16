@@ -14,18 +14,17 @@ namespace TravelBuddyAPI.Services.Implementations
         {
             _context = context;
         }
-
         public async Task<TripLog> CreateTripLogAsync(int tripId, TripLogInputDto tripLogInputDto)
         {
+
             TripLog tripLog = new()
             {
-                TripId  = tripId,
+                TripId = tripId,
                 Location = tripLogInputDto.Location,
                 Notes = tripLogInputDto.Notes,
                 PhotoPath = tripLogInputDto.PhotoPath,
                 Date = tripLogInputDto.Date
             };
-
 
             await _context.TripLogs.AddAsync(tripLog);
             await _context.SaveChangesAsync();
