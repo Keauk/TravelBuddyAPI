@@ -75,6 +75,15 @@ namespace TravelBuddyAPI.Services.Implementations
 
         public async Task<UserResponseDto> CreateUserAsync(UserInputDto userDto)
         {
+            User? existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == userDto.Username || u.Email == userDto.Email);
+
+            if (existingUser != null)
+            {
+                throw new InvalidOperationException("A user with the same username or email already exists.");
+            }
+
+
             User user = new()
             {
                 Username = userDto.Username,

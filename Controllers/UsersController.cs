@@ -43,9 +43,15 @@ namespace TravelBuddyAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<UserResponseDto>> PostUser(UserInputDto userDto)
         {
-            var createdUser = await _userService.CreateUserAsync(userDto);
-
-            return Ok(createdUser);
+            try
+            {
+                var createdUser = await _userService.CreateUserAsync(userDto);
+                return Ok(createdUser);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
 
         // POST: api/users/login
